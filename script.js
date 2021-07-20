@@ -32,24 +32,28 @@ function inputDecimal(dot) {
     }
 };
 
-function handleOperator(nextOpe) {
+function handleOperator(nextOperator) {
     //destructurer l'objet calculator
     const { firstOperand, displayValue, operator } = calculator;
     const inputValue = parseFloat(displayValue); 
     //convertir displayValue string en nombre flottant
     if (operator && calculator.waitingForSecondOperand) {
-        calculator.operator = nextOpe;
+        calculator.operator = nextOperator;
         return;
     } else if (firstOperand === null && !isNaN(inputValue)) {
         calculator.firstOperand = inputValue;
     } else if (operator) {
         const result = calculate(firstOperand, inputValue, operator);
-        calculator.displayValue = `${parseFloat(result.toFixed(7))}`;
-        calculator.firstOperand = result;
+        if (isNaN(result)) {
+            calculator.displayValue = '0';
+        } else {
+            calculator.displayValue = `${parseFloat(result.toFixed(7))}`;
+            calculator.firstOperand = result;
+        }
     }
     calculator.waitingForSecondOperand = true;
     //indique que le premier opérateur a été entré
-    calculator.operator = nextOpe;
+    calculator.operator = nextOperator;
 };
 
 function calculate(firstOperand, secondOperand, operator) {
@@ -61,7 +65,7 @@ function calculate(firstOperand, secondOperand, operator) {
       return firstOperand * secondOperand;
     } else if (operator === '/') {
       return firstOperand / secondOperand;
-    }
+    } 
     return secondOperand;
 };
 
@@ -70,7 +74,15 @@ function resetCalculator() {
     calculator.firstOperand = null;
     calculator.waitingForSecondOperand = false;
     calculator.operator = null;
-    console.log(calculator);
+}
+
+function back() {
+    const { displayValue, waitingForSecondOperand } = calculator;
+    if (waitingForSecondOperand) {
+        return calculator.displayValue;
+    } else {
+        return calculator.displayValue = displayValue.slice(0, -1);
+    }
 }
 
 const buttons = document.querySelector('.calculator-buttons');
@@ -93,6 +105,9 @@ buttons.addEventListener('click', event => {
             break;
         case 'clear':
             resetCalculator();
+            break;
+        case 'back':
+            back();
             break;
         default:
             //si c'est un entier

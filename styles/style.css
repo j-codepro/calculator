@@ -50,16 +50,16 @@ button:active {
     background: rgb(185, 185, 185);
 }
 
-.clear, .cancel {
+.clear, .back {
     background: rgb(211, 91, 91);
     color: white;
 }
 
-.clear:hover, .cancel:hover {
+.clear:hover, .back:hover {
     background: rgb(202, 82, 82);
 }
 
-.clear:active, .cancel:active {
+.clear:active, .back:active {
     background: rgb(194, 63, 63);
 }
 
@@ -74,6 +74,6 @@ button:active {
     grid-area: 1 / 1 / 2 / 3;
 }
 
-.cancel {
+.back {
     grid-area: 1 / 3 / 2 / 5;
 }
