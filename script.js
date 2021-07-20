@@ -23,8 +23,11 @@ function inputDigit(digit) {
 };
 
 function inputDecimal(dot) {
-    //if displayValue n'a pas de "."
-    if(!calculator.displayValue.includes(dot)) {
+    if(calculator.waitingForSecondOperand === true) {
+        calculator.displayValue = '0.';
+        calculator.waitingForSecondOperand = false;
+        return
+    } else if (!calculator.displayValue.includes(dot)) {
         calculator.displayValue += dot;
     }
 };
@@ -35,14 +38,13 @@ function handleOperator(nextOpe) {
     const inputValue = parseFloat(displayValue); 
     //convertir displayValue string en nombre flottant
     if (operator && calculator.waitingForSecondOperand) {
-        calculator.operator = nextOperator;
-        console.log(calculator);
+        calculator.operator = nextOpe;
         return;
     } else if (firstOperand === null && !isNaN(inputValue)) {
         calculator.firstOperand = inputValue;
     } else if (operator) {
         const result = calculate(firstOperand, inputValue, operator);
-        calculator.displayValue = result; // ?????????????????? String(result)
+        calculator.displayValue = `${parseFloat(result.toFixed(7))}`;
         calculator.firstOperand = result;
     }
     calculator.waitingForSecondOperand = true;
@@ -72,6 +74,37 @@ function resetCalculator() {
 }
 
 const buttons = document.querySelector('.calculator-buttons');
+buttons.addEventListener('click', event => {
+    const { target } = event; //const target = event.target;
+    const { value } = target;
+    if(!target.matches('button')) {
+        return;
+    }
+    switch (value) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '=':
+            handleOperator(value);
+            break;
+        case '.':
+            inputDecimal(value)
+            break;
+        case 'clear':
+            resetCalculator();
+            break;
+        default:
+            //si c'est un entier
+            if (Number.isInteger(parseFloat(value))) {
+                inputDigit(value);
+            }
+    }
+    updateDisplay();
+})
+
+/*
+const buttons = document.querySelector('.calculator-buttons');
 buttons.addEventListener('click', (event) => {
     const { target } = event; //const target = event.target;
     //représente l'élément cliqué
@@ -91,5 +124,5 @@ buttons.addEventListener('click', (event) => {
         updateDisplay();
     }
 });
-
+*/
 
