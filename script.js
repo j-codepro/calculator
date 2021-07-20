@@ -27,24 +27,28 @@ function inputDecimal(dot) {
     if(!calculator.displayValue.includes(dot)) {
         calculator.displayValue += dot;
     }
-}
+};
 
 function handleOperator(nextOpe) {
     //destructurer l'objet calculator
     const { firstOperand, displayValue, operator } = calculator;
     const inputValue = parseFloat(displayValue); 
     //convertir displayValue string en nombre flottant
-    if (firstOperand === null && !isNaN(inputValue)) {
+    if (operator && calculator.waitingForSecondOperand) {
+        calculator.operator = nextOperator;
+        console.log(calculator);
+        return;
+    } else if (firstOperand === null && !isNaN(inputValue)) {
         calculator.firstOperand = inputValue;
     } else if (operator) {
         const result = calculate(firstOperand, inputValue, operator);
-        calculator.displayValue = result; // ??????????????????
+        calculator.displayValue = result; // ?????????????????? String(result)
         calculator.firstOperand = result;
     }
     calculator.waitingForSecondOperand = true;
     //indique que le premier opérateur a été entré
     calculator.operator = nextOpe;
-}
+};
 
 function calculate(firstOperand, secondOperand, operator) {
     if (operator === '+') {
@@ -57,7 +61,15 @@ function calculate(firstOperand, secondOperand, operator) {
       return firstOperand / secondOperand;
     }
     return secondOperand;
-  }
+};
+
+function resetCalculator() {
+    calculator.displayValue = '0';
+    calculator.firstOperand = null;
+    calculator.waitingForSecondOperand = false;
+    calculator.operator = null;
+    console.log(calculator);
+}
 
 const buttons = document.querySelector('.calculator-buttons');
 buttons.addEventListener('click', (event) => {
@@ -72,8 +84,8 @@ buttons.addEventListener('click', (event) => {
         inputDecimal(target.value);
         updateDisplay();
     } else if (target.classList.contains('clear')) {
-        console.log('clear', target.value);
-        return;
+        resetCalculator();
+        updateDisplay();
     } else {
         inputDigit(target.value);
         updateDisplay();
